@@ -1,53 +1,30 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
-
-use App\Http\Controllers\AuthorController;
 
 use App\Http\Controllers\AuthorTwoController;
-
 
 Route::get('/', function () {
     return view('home');
 });
 
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('about-us/', function(){
-    return view('about');
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::get('add-author',[AuthorTwoController::class,'showAddAuthorForm'])->name('add-author');
+Route::post('add-author-db',[AuthorTwoController::class,'processForm'])->name('form.process');
 });
 
 
-Route::get('admin/',function(){
- return view('contact');
-});
-
-
-// Route::get('/users',function(){
-//     $name = "John Doe";
-//     return view('userpage',['user'=>$name, 'city' => 'karachi']);
-   
-//  });
-
-
-//  Route::get('contact-us/',[UserController::class,'show']);
-
-//  Route::get('show-authors/',[AuthorController::class,'showAllAuthors']);
-
- 
- Route::get('add-authors/',[AuthorController::class,'addAuthor']);
-
- Route::get('update-authors/',[AuthorController::class,'updateAuthor']);
 
 
 
-Route::get('show-authors/',[AuthorTwoController::class,'showAuthors']);
 
-
-Route::get('authors/{id}',[AuthorTwoController::class,'showSingleUser']);
-
-Route::get('add-author',[AuthorTwoController::class,'showAddAuthorForm'])->name('forms.add-author');
-
-
-Route::post('process-form-two',[AuthorTwoController::class,'processForm'])->name('form.process');
+require __DIR__.'/auth.php';
